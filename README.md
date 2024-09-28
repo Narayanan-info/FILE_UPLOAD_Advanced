@@ -20,7 +20,7 @@
   </a>
 </p>
 
-# JWT and CSRF Protection with Node.js and MongoDB
+# File Upload Best Practices for Node.js API Service 
 
 This is a secure file upload API built using Node.js and Express, following best practices to handle file uploads with proper validation and security measures.
 
