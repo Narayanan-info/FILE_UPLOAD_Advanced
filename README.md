@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="#"><img src="#" alt="Assets"></a>
+  <a href="#"><img src="assets/file.png" alt="Assets"></a>
   <br>
   File Upload Secuirty Best Practices  
   <br>
