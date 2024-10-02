@@ -150,6 +150,7 @@ This API endpoint allows users to upload files securely. Only `JPEG`, `PNG`, and
 3. Unique File Naming: Each file is renamed with a unique identifier to prevent overwriting existing files.
 4. File Size Limitation: Restricts uploads to a maximum size of 5MB.
 5. Checksum Validation: A SHA-256 checksum is calculated for each uploaded file to ensure integrity.
+6. If the file contains malicious embedded XSS JavaScript, the API will detect and reject the upload.
 
 ## License
 
