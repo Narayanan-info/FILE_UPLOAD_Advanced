@@ -9,8 +9,12 @@
   "author": "Narayanan K",
   "license": "ISC",
   "dependencies": {
+    "crypto": "^1.0.1",
     "express": "^4.21.0",
+    "fs": "^0.0.1-security",
+    "helmet": "^8.0.0",
     "multer": "^1.4.5-lts.1",
-    "sanitize-filename": "^1.6.3"
+    "sanitize-filename": "^1.6.3",
+    "xss": "^1.0.15"
   }
 }

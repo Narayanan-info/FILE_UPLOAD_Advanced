@@ -1,32 +1,49 @@
 const { saveFileLocally } = require('../services/fileService');
-const { calculateChecksum } = require('../utils/checksum');
-const { scanFile } = require('../utils/virusScan');
-const { renameFile, sanitizeFilename } = require('../utils/securityUtils');
+const { renameFile, sanitizeFilename, computeFileChecksum } = require('../utils/checksum');
+const xss = require('xss');
+const fs = require('fs');
 
-exports.uploadFile = async (req, res, next) => {
+exports.uploadFile = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
   try {
-    const file = req.file;
-
-    if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+    const validFileTypes = ['image/jpeg', 'image/png', 'application/pdf', 'image/svg+xml'];
+    if (!validFileTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({ error: 'Invalid file type. Only JPEG, PNG, PDF, and SVG are allowed.' });
     }
 
-    const safeFilename = sanitizeFilename(file.originalname);
-    const newFilename = renameFile(safeFilename);
+    if (req.file.mimetype === 'image/svg+xml') {
+      const fileContent = fs.readFileSync(req.file.path, 'utf8');
+      const sanitizedSVG = xss(fileContent);
 
-    await scanFile(file.path);
+      if (sanitizedSVG !== fileContent) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: 'SVG contains embedded JavaScript, upload rejected.'});
+      }
+    }
 
-    const savedFilePath = await saveFileLocally(file, newFilename);
+    if (req.file.mimetype === 'application/pdf') {
+      const fileContent = fs.readFileSync(req.file.path, 'utf8');
+      if (fileContent.includes('/JavaScript')) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: 'PDF contains embedded JavaScript, upload rejected.' });
+      }
+    }
 
-    const checksum = await calculateChecksum(savedFilePath);
+    const checksum = await computeFileChecksum(req.file.path);
 
-    res.status(200).json({
-      message: 'File uploaded and saved successfully',
-      filename: newFilename,
-      checksum,
-      path: savedFilePath,
+    res.json({
+      message: 'File uploaded successfully!',
+      filename: req.file.filename,
+      originalname: req.file.originalname,
+      checksum: checksum,
+      size: req.file.size,
+      path: req.file.path,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error('Error during file upload:', error);
+    res.status(500).json({ error: 'Error processing file' });
   }
 };
