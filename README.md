@@ -27,6 +27,7 @@ This is a secure file upload API built using Node.js and Express, following best
 ## Features
 * Secure file uploads with file type whitelisting (JPEG, PNG, PDF).
 * Filename sanitization to prevent directory traversal attacks.
+* Prevent XSS attacks from payloads embedded in (PDF, SVG)
 * Unique file naming to avoid overwriting existing files.
 * File size limitation (5MB).
 * Checksum calculation to verify file integrity.
@@ -57,13 +58,16 @@ file-upload/
 │   └── fileController.js         # Handles file upload logic
 ├── middleware/
 │   └── fileUpload.js             # Multer configuration and validation logic
+├── payloads/
+│   └── batman.pdf                # XSS payload embedded pdf file for testing purpose
+│   └── xss-image.svg             # SVG XSS payload embedded file for testing purpose
 ├── routes/
 │   └── fileRoutes.js             # API routes
 ├── services/
 │   └── fileService.js            # File-related services (checksum calculation)
 ├── uploads/                      # Directory for storing uploaded files
 ├── utils/
-│   └── securityUtils.js           # Utility to calculate checksum (optional)
+│   └── checksum.js               # Utility to calculate checksum (optional)
 ├── app.js                        # Main application entry point
 ├── package.json                  # Dependencies and scripts
 └── .gitignore                    # Ignoring unnecessary files (like node_modules)
@@ -122,6 +126,14 @@ This API endpoint allows users to upload files securely. Only `JPEG`, `PNG`, and
   "path": "uploads/f67e5dcb7c13a2342a54-image.png"
 }
 
+```
+
+* Response Example For If The File Containe XSS Payloads:
+
+```bash
+{
+    "error": "SVG contains embedded JavaScript, upload rejected."
+}
 ```
 ## Testing the API
 **To test the file upload API:**
