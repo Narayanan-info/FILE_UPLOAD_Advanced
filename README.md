@@ -6,7 +6,7 @@
   <br>
 </h1>
 
-<h4 align="center">Advanced ( 🔥 ) Advance File Upload Project V1.0</h4>  
+<h4 align="center">Advanced ( 🔥 ) Advance File Upload Project V2.0</h4>  
 
 <p align="center">
   <a href="#">
